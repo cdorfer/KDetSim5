@@ -1,0 +1,7 @@
+*.o
+*.sl
+*.cxx
+*.pcm
+*.C~
+*.obj
+*.zip
