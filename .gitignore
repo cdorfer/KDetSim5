@@ -5,3 +5,4 @@
 *.C~
 *.obj
 *.zip
+*.DS_Store

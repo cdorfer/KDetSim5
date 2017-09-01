@@ -6,7 +6,7 @@ det.SetDriftHisto(15e-9);
 
 // Detector binning
 det.nx = 450;
-det.ny = 51;
+det.ny = 100;
 det.nz = 1;
 
 // Detector dimensions
@@ -30,7 +30,7 @@ Int_t diamond = 10;
 Int_t aluminum = 100; //actually we use Cr/Au but that should not matter
 
 // Space charge
-Float_t space_charge = 0.2; //equivalent to a 1e11 space charge
+Float_t space_charge = -0.25; //equivalent to a 2.5e11 space charge
 
 // Bias voltages
 det.Voltage = 400;
@@ -82,31 +82,42 @@ det.ElRectangle(PadPos, PadSiz, padBit, aluminum);
 det.SetBoundaryConditions();
 det.CalField(0);
 det.CalField(1);
- 
-//define entry and exit point of mip
-//det.enp[0]=200;
-//det.enp[1]=200;
-//det.enp[2]=1;
-//det.exp[0]=100;
-//det.exp[1]=100;
-//det.exp[2]=50;
 
-//TCanvas c1; c1.cd();
-//det.ShowMipIR(20); //visualize track
-
-//TCanvas c2; c2.cd();
-//det.MipIR(200); //calculate drift 
-//det.sum->Draw(); //draw current
-//det.pos->Draw("SAME"); // hole current
-//det.neg->Draw("SAME");  // electron current
-
-TCanvas c3; c3.cd();
-TH2 *hEFxy =  det->Draw("EFxy");
-hEFxy->GetYaxis()->SetRangeUser(20,500);
-hEFxy->GetXaxis()->SetRangeUser(20,4480);
+TCanvas *c1 = new TCanvas("c1","c1",1200,400);
+c1->cd();
+TH2 *hEFxy = det->Draw("EFxy");
+//hEFxy->GetYaxis()->SetRangeUser(20,500);
+//hEFxy->GetXaxis()->SetRangeUser(20,4480);
 hEFxy->GetZaxis()->SetTitle("Electric Field [V/#mum]");
 hEFxy->SetTitle("4.5x4.5mm Diamond Pad Detector");
-c3.SetRightMargin(0.15);
+c1->SetRightMargin(0.15);
 hEFxy->Draw("COLZ");
+
+TCanvas *c2 = new TCanvas("c2","c2");
+c2->cd();
+TH1 *projy = hEFxy->ProjectionY("",50, 50);
+projy.Draw();
+
+entryPointX = 300;
+entryPointY = 100;
+entryPointZ = 0;
+
+det.diff=1;
+det.SetEntryPoint(entryPointX,entryPointY,entryPointZ);
+det.SetExitPoint(entryPointX+20,entryPointY,entryPointZ+1);
+det.MipIR(100);
+
+TCanvas *c3 = new TCanvas("c3","c3", 1200,400);
+c3->cd()
+det.ShowMipIR(100);
+
+TCanvas *c4 = new TCanvas("c4","c4");
+c4->cd();
+TH1 *charge = det.sum; //draw current
+
+charge->GetXaxis()->SetRangeUser(-5e-9,10e-9);
+charge->Draw();
+
+
 }
 

@@ -5,9 +5,9 @@ KDetector  det;
 
  det.SetDriftHisto(15e-9);
 // Detector binning
-det.nx = 200;
-det.ny = 200;
-det.nz = 50;
+det.nx = 100;
+det.ny = 250;
+det.nz = 25;
 
 // Detector dimensions
 Float_t dimX = 400;
