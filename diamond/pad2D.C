@@ -21,7 +21,7 @@ Float_t pDimZ = 1;
 
 //Pad position
 Float_t pXpos = dimX/2.0;
-Float_t pZpos = 1;
+Float_t pZpos = 0;
 Float_t pYlow = 0;
 Float_t pYhigh = dimY;
 
@@ -38,6 +38,21 @@ det.Voltage = 400;
 // Electrode setup
 Int_t gndBit = 2; //defines ground electrode
 Int_t padBit = 16385; // bit2 = 1 (HV electrode), bit14 = 1 (electrode for which Ramo field is calculated)
+
+// MIP properties
+entryPointX = 300;
+entryPointY = 100;
+entryPointZ = 0;
+
+
+// Diffusion
+det.diff=1;
+
+// Output directory
+const char *currentProfile = "../Results/current_profile.dat";
+
+// Other
+Bool_t drawing = false;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -83,40 +98,51 @@ det.SetBoundaryConditions();
 det.CalField(0);
 det.CalField(1);
 
-TCanvas *c1 = new TCanvas("c1","c1",1200,400);
-c1->cd();
-TH2 *hEFxy = det->Draw("EFxy");
-//hEFxy->GetYaxis()->SetRangeUser(20,500);
-//hEFxy->GetXaxis()->SetRangeUser(20,4480);
-hEFxy->GetZaxis()->SetTitle("Electric Field [V/#mum]");
-hEFxy->SetTitle("4.5x4.5mm Diamond Pad Detector");
-c1->SetRightMargin(0.15);
-hEFxy->Draw("COLZ");
-
-TCanvas *c2 = new TCanvas("c2","c2");
-c2->cd();
-TH1 *projy = hEFxy->ProjectionY("",50, 50);
-projy.Draw();
-
-entryPointX = 300;
-entryPointY = 100;
-entryPointZ = 0;
-
-det.diff=1;
+// MIP Properties
 det.SetEntryPoint(entryPointX,entryPointY,entryPointZ);
 det.SetExitPoint(entryPointX+20,entryPointY,entryPointZ+1);
 det.MipIR(100);
 
-TCanvas *c3 = new TCanvas("c3","c3", 1200,400);
-c3->cd()
-det.ShowMipIR(100);
+// Drawing
+if(drawing){
+	TCanvas *c1 = new TCanvas("c1","c1",1200,400);
+	c1->cd();
+	TH2 *hEFxy = det->Draw("EFxy");
+	hEFxy->GetYaxis()->SetRangeUser(20,500);
+	//hEFxy->GetXaxis()->SetRangeUser(20,4480);
+	hEFxy->GetZaxis()->SetTitle("Electric Field [V/#mum]");
+	hEFxy->SetTitle("4.5x4.5mm Diamond Pad Detector");
+	c1->SetRightMargin(0.15);
 
-TCanvas *c4 = new TCanvas("c4","c4");
-c4->cd();
-TH1 *charge = det.sum; //draw current
+	hEFxy->Draw("COLZ");
 
-charge->GetXaxis()->SetRangeUser(-5e-9,10e-9);
-charge->Draw();
+	TCanvas *c2 = new TCanvas("c2","c2");
+	c2->cd();
+	TH1 *projy = hEFxy->ProjectionY("",50, 50);
+	projy.Draw();
+
+	TCanvas *c3 = new TCanvas("c3","c3", 1200,400);
+	c3->cd();
+	det.ShowMipIR(100);
+
+	TCanvas *c4 = new TCanvas("c4","c4");
+	c4->cd();
+	TH1 *charge = det.sum; //draw current
+
+	charge->GetXaxis()->SetRangeUser(-5e-9,10e-9);
+	charge->Draw();
+}
+
+//write current profile to file for later analysis
+std::ofstream ofs (currentProfile, std::ofstream::out);
+ofs << "MIP infos" << std::endl;
+TAxis *axis = charge->GetXaxis();
+for(bin=0; bin<charge->GetNbinsX(); bin++){
+	Double_t binCenter = axis->GetBinCenter(bin);
+	Double_t binContent = charge->GetBinContent(bin);
+	ofs << binCenter << ' ' << binContent << std::endl;
+}
+ofs.close();
 
 
 }
