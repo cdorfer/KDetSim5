@@ -40,8 +40,8 @@ Int_t gndBit = 1; //defines ground electrode
 Int_t padBit = 16386; // bit2 = 1 (HV electrode), bit14 = 1 (electrode for which Ramo field is calculated)
 
 // MIP properties
-Int_t entryPointX = 300;
-Int_t entryPointY = 300;
+Int_t entryPointX = 4200;
+Int_t entryPointY = 250;
 Int_t entryPointZ = 0;
 Int_t extX = 100;
 Int_t extY = 0;
@@ -51,7 +51,7 @@ Int_t extZ = 1;
 det.diff=1;
 
 // Output directory
-const char *currentProfile="../Results/prof_y=450.dat";
+const char *currentProfile="../Results/total_x=4200.dat";
 
 // Other
 Bool_t drawing = true;
@@ -141,11 +141,13 @@ if(drawing){
 	TCanvas *c5 = new TCanvas("c5","c5");
 	c5->cd();
 	TH1 *charge = det.sum; //draw current
+	TH1 *el = det.neg;
+	TH1 *holes = det.pos;
 
 	charge->GetXaxis()->SetRangeUser(-5e-9,10e-9);
 	charge->Draw();
-	det.neg.Draw("SAME"); 
-	det.pos.Draw("SAME");
+	el->Draw("SAME"); 
+	holes->Draw("SAME");
 	charge->Draw("SAME");
 }
 
