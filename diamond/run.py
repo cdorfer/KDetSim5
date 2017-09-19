@@ -28,7 +28,7 @@ def main():
 	for y in range(50, 499, 50):
 		ypos = y
 		repl = [
-		["Float_t entryPointY", "Float_t entryPointY = " + str(ypos) + ";\n"],
+		["Int_t entryPointY", "Int_t entryPointY = " + str(ypos) + ";\n"],
 		["const char *currentProfile=", 'const char *currentProfile="../Results/prof_y=' + str(ypos) + '.dat";\n']
 		]
 		h.modifyCode(repl)

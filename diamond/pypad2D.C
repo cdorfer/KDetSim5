@@ -30,7 +30,7 @@ Int_t diamond = 10;
 Int_t aluminum = 100; //=Al, actually we use Cr/Au but that should not matter
 
 // Space charge
-Float_t space_charge = -0.5; //equivalent to a 5e11 space charge
+Float_t space_charge = 1; //equivalent to a number * 1e12 1/ccm space charge
 
 // Bias voltages
 det.Voltage = -400;
@@ -40,10 +40,10 @@ Int_t gndBit = 1; //defines ground electrode
 Int_t padBit = 16386; // bit2 = 1 (HV electrode), bit14 = 1 (electrode for which Ramo field is calculated)
 
 // MIP properties
-Int_t entryPointX = 4200;
-Int_t entryPointY = 250;
+Int_t entryPointX = 2000;
+Int_t entryPointY = 50;
 Int_t entryPointZ = 0;
-Int_t extX = 100;
+Int_t extX = 0;
 Int_t extY = 0;
 Int_t extZ = 1;
 
@@ -51,7 +51,7 @@ Int_t extZ = 1;
 det.diff=1;
 
 // Output directory
-const char *currentProfile="../Results/total_x=4200.dat";
+const char *currentProfile="../Results/prof_y=50.dat";
 
 // Other
 Bool_t drawing = true;
@@ -82,13 +82,18 @@ std::cout << "pad bin location: " << det.EG->GetXaxis()->FindBin(pXpos) << std::
 
 //  Material and space charge setup:
 Int_t i, j, k;
+Float_t neff = 5;
 for(int k=1; k<=nz; k++) 
   for(int j=1; j<=ny; j++)
-    for(int i=1; i<=nx; i++) 
-      {
+    for(int i=1; i<=nx; i++){
 		det.DM->SetBinContent(i, j, k, diamond);
-		//det.NeffH->SetBinContent(i, j, k, space_charge);
-      }
+
+		//linear
+		//det.NeffH->SetBinContent(i, j, k, 0.6*(-1.0*neff+j/neff));
+		
+		//quadratic
+		det.NeffH->SetBinContent(i, j, k, 10.0/15625*pow((j-25),3));
+    }
 
 //  GND Pad
 Float_t GndPos[3]={pXpos, pYlow, pZpos}; 
@@ -134,9 +139,18 @@ if(drawing){
 	TH1 *projy = hEFxy->ProjectionY("",50, 50);
 	projy.Draw();
 
+	//TCanvas *c4 = new TCanvas("c4","c4", 1200,400);
+	//c4->cd();
+	//det.ShowMipIR(100);
+
+
+	//all gaussian beam stuff:
 	TCanvas *c4 = new TCanvas("c4","c4", 1200,400);
 	c4->cd();
-	det.ShowMipIR(100);
+	//det.GaussBeam(100, 0, 20, 2, 0, 0);
+	//det.ShowGaussBeam(100, 0, 20, 2, 1,0);
+
+
 
 	TCanvas *c5 = new TCanvas("c5","c5");
 	c5->cd();
@@ -149,6 +163,9 @@ if(drawing){
 	el->Draw("SAME"); 
 	holes->Draw("SAME");
 	charge->Draw("SAME");
+
+
+
 }
 
 //write current profile to file for later analysis

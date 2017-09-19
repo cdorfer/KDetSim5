@@ -106,7 +106,6 @@ public:
   void SetNeff(TH3F *neff,Int_t calnow=1) {NeffH=neff; if(calnow) CalPhyField(); };
 
   // Simulation of drift
-
   void SetEntryPoint(Float_t x, Float_t y, Float_t z) {enp[0]=x; enp[1]=y; enp[2]=z;};
   void SetExitPoint(Float_t x, Float_t y, Float_t z) {exp[0]=x; exp[1]=y; exp[2]=z;};
   void MipIR(Int_t=20,Float_t=0);
@@ -114,6 +113,9 @@ public:
   
   void GaussBeam(Int_t , Float_t , Float_t , Float_t , Float_t , Float_t); //user manca
   void ShowGaussBeam(Int_t , Float_t , Float_t , Float_t , Int_t ,Int_t ); //user manca
+
+  void TPAVoxel(Int_t div, Float_t lambda); //Christian Dorfer
+  void ShowTPAVoxel(Int_t div, Int_t color,Int_t how); //Christian Dorfer
 
   void Drift(Double_t, Double_t, Double_t, Float_t, KStruct *, Double_t = 0);
   void CalM(KStruct *seg, Double_t *data, Int_t=-1); //multiplication calculation
